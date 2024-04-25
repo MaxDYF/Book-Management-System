@@ -1,0 +1,52 @@
+#include <stdint.h>
+#include "time.h"
+#include <stdio.h>
+typedef struct Date
+{
+    int16_t year;
+    int16_t month;
+    int16_t day;
+} Date;
+
+Date getDatefromTime(uint32_t time)
+{
+    Date date;
+    date.year = 1970;
+    date.month = 1;
+    date.day = 1;
+#define isLeapYear(date) ((date.year % 4 == 0 && date.year % 100 != 0) || (date.year % 400 == 0))
+    while (time > 365 + (int)isLeapYear(date))
+    {
+        time -= 365 + (int)isLeapYear(date);
+        date.year++;
+    }
+    int month[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    if (isLeapYear(date))
+        month[2] = 29;
+#undef isLeapYear
+    for (int i = 1; i <= 12; i++)
+    {
+        if (time > month[i])
+        {
+            time -= month[i];
+            date.month++;
+        }
+        else
+        {
+            date.day += time;
+            return date;
+        }
+    }
+}
+uint32_t getTimefromDate(Date date)
+{
+    Date a;
+    a.year = 1970;
+}
+int main()
+{
+    int a;
+    scanf("%d", &a);
+    Date b = getDatefromTime(a);
+    printf("%d, %d, %d\n", b.year, b.month, b.day);
+}
