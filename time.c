@@ -42,6 +42,11 @@ uint32_t getTimefromDate(Date date)
 {
     Date a;
     a.year = 1970;
+    a.month = 1;
+    a.day = 1;
+    uint32_t time = 0;
+    while (a.year < date.year)
+        time +=
 }
 int main()
 {
