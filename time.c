@@ -40,13 +40,22 @@ Date getDatefromTime(uint32_t time)
 }
 uint32_t getTimefromDate(Date date)
 {
+#define isLeapYear(date) ((date.year % 4 == 0 && date.year % 100 != 0) || (date.year % 400 == 0))
     Date a;
     a.year = 1970;
     a.month = 1;
     a.day = 1;
     uint32_t time = 0;
     while (a.year < date.year)
-        time +=
+    {
+        time += 365 + (int)isLeapYear(date);
+        date.year++;
+    }
+    int month[] = {0, 31, 28 + (int)isLeapYear(date), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    for (int mon = 1; mon < date.month; ++mon)
+        time += month[mon];
+    time += date.day - 1;
+#undef isLeapYear
 }
 int main()
 {
