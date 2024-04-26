@@ -1,7 +1,32 @@
 #include <stdint.h>
-typedef struct BookList;
-typedef struct BookStatus;
-typedef struct BookInfo;
+#include <stdbool.h>
+#include <string.h>
+#include <malloc.h>
+#include "time.h"
+#include "user.h"
+typedef struct BookList
+{
+    bool isLoan;
+    uint32_t loanTime;
+    uint32_t expireTime;
+    uint32_t loanUID;
+    struct BookList *nextBook;
+    struct BookInfo *bookinfo;
+} BookList;
+typedef struct BookStatus
+{
+    uint32_t totCount;
+    uint32_t restCount;
+    struct BookList *books;
+} BookStatus;
+typedef struct BookInfo
+{
+    uint64_t ISBN;
+    char *name;
+    char *auther;
+    struct BookInfo *nextBook;
+    struct BookStatus *bookStatus;
+} BookInfo;
 /*
  *  创建新的书本
  *  如果没有这本书，创建并返回该书的指针
@@ -33,3 +58,9 @@ void addBook(BookInfo *book, uint32_t val);
  *  否则返回0
  */
 uint32_t deleteBook(BookInfo *book, uint32_t val);
+/*
+ *  借阅一本书
+ *  如果借阅成功，则返回false，并修改借阅书本的借阅情况
+ *  如果借阅失败，返回true
+ */
+bool borrowBook(BookInfo *book, Date time, User *user, uint32_t borrowTime);

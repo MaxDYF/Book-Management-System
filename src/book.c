@@ -1,31 +1,4 @@
 #include "book.h"
-#include <stdint.h>
-#include <stdbool.h>
-#include <string.h>
-#include <malloc.h>
-typedef struct BookList
-{
-    bool isLoan;
-    uint32_t loanTime;
-    uint32_t expireTime;
-    uint32_t loanUID;
-    struct BookList *nextBook;
-    struct BookInfo *bookinfo;
-} BookList;
-typedef struct BookStatus
-{
-    uint32_t totCount;
-    uint32_t restCount;
-    struct BookList *books;
-} BookStatus;
-typedef struct BookInfo
-{
-    uint64_t ISBN;
-    char *name;
-    char *auther;
-    struct BookInfo *nextBook;
-    struct BookStatus *bookStatus;
-} BookInfo;
 BookInfo *findBookbyISBN(BookInfo *bookhead, uint32_t ISBN)
 {
     BookInfo *p = bookhead;
@@ -75,8 +48,8 @@ void addBook(BookInfo *book, uint32_t val)
     BookList *p = book->bookStatus->books;
     if (p == NULL)
     {
-        book = (BookList *)malloc(sizeof(BookList));
-        p = book;
+        book->bookStatus->books = (BookList *)malloc(sizeof(BookList));
+        p = book->bookStatus->books;
         p->isLoan = false;
         p->bookinfo = book;
         p->nextBook = NULL;
@@ -125,4 +98,9 @@ uint32_t deleteBook(BookInfo *book, uint32_t val)
         p = next;
     }
     return ans;
+}
+bool borrowBook(BookInfo *book, Date time, User *user, uint32_t borrowTime)
+{
+    if (book == NULL)
+        return true;
 }

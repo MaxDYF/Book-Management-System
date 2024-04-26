@@ -1,5 +1,10 @@
 #include <stdint.h>
-typedef struct Date;
+typedef struct
+{
+    int16_t year;
+    int16_t month;
+    ` int16_t day;
+} Date;
 /*
  *  将内部整数类型时间转换为标准日期格式
  */
