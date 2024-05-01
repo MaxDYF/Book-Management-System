@@ -1,8 +1,0 @@
-[
-{
-  "directory": "C:/Users/MaxDYF/Documents/Code/Book-Management-System/build",
-  "command": "C:\\mingw\\bin\\gcc.exe   -g -o CMakeFiles\\Example.dir\\src\\main.c.obj -c C:\\Users\\MaxDYF\\Documents\\Code\\Book-Management-System\\src\\main.c",
-  "file": "C:/Users/MaxDYF/Documents/Code/Book-Management-System/src/main.c",
-  "output": "CMakeFiles/Example.dir/src/main.c.obj"
-}
-]
