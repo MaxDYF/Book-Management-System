@@ -1,0 +1,3 @@
+C:/Users/MaxDYF/Documents/Code/Book-Management-System/build/CMakeFiles/Example.dir
+C:/Users/MaxDYF/Documents/Code/Book-Management-System/build/CMakeFiles/edit_cache.dir
+C:/Users/MaxDYF/Documents/Code/Book-Management-System/build/CMakeFiles/rebuild_cache.dir
