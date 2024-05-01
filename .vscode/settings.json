@@ -3,6 +3,8 @@
     "stdbool.h": "c",
     "user.h": "c",
     "cstdlib": "c",
-    "book.h": "c"
+    "book.h": "c",
+    "typeinfo": "c",
+    "stdint.h": "c"
   }
 }

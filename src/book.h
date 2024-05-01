@@ -1,9 +1,9 @@
 #include <stdint.h>
 #include <stdbool.h>
-#include <string.h>
-#include <malloc.h>
 #include "time.h"
 #include "user.h"
+#ifndef _BOOK_H_
+#define _BOOK_H_
 typedef struct BookList
 {
     bool isLoan;
@@ -64,3 +64,10 @@ uint32_t deleteBook(BookInfo *book, uint32_t val);
  *  如果借阅失败，返回true
  */
 bool borrowBook(BookInfo *book, Date time, User *user, uint32_t borrowTime);
+/*
+ *  归还一本书
+ *  如果归还成功，返回还书的过期时间，未过期则返回0
+ *  如果没有借阅信息，返回-1
+ */
+int returnBook(BookInfo *book, Date time, User *user);
+#endif

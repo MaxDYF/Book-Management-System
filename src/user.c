@@ -1,8 +1,3 @@
-#include <stdint.h>
-#include <stdbool.h>
-#include <string.h>
-#include <malloc.h>
-#include "book.h"
 #include "user.h"
 User *createUser(User *headUser, uint32_t uid, char *name)
 {

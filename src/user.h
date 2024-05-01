@@ -1,16 +1,15 @@
 #include <stdint.h>
-#include "book.h"
 typedef struct LoanList
 {
     struct BookList *book;
-    LoanList *nextLoan;
+    struct LoanList *nextLoan;
 } LoanList;
 typedef struct User
 {
     uint32_t uid;
     char *name;
     LoanList *loanlist;
-    User *nextUser;
+    struct User *nextUser;
 } User;
 /*
  *  创建新用户

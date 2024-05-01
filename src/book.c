@@ -1,4 +1,5 @@
 #include "book.h"
+#include <malloc.h>
 BookInfo *findBookbyISBN(BookInfo *bookhead, uint32_t ISBN)
 {
     BookInfo *p = bookhead;
@@ -101,6 +102,55 @@ uint32_t deleteBook(BookInfo *book, uint32_t val)
 }
 bool borrowBook(BookInfo *book, Date time, User *user, uint32_t borrowTime)
 {
-    if (book == NULL)
+    if (book->bookStatus == NULL)
         return true;
+    BookStatus *bookStatusPointer = book->bookStatus;
+    if (bookStatusPointer->totCount <= bookStatusPointer->restCount) // 没有空余的书
+        return true;
+    BookList *bookListPointer = bookStatusPointer->books;
+    if (bookListPointer == NULL)
+        return true;
+    LoanList *userBorrowPointer = user->loanlist;
+    for (; userBorrowPointer->nextLoan != NULL; userBorrowPointer = userBorrowPointer->nextLoan)
+        continue;
+    for (; bookListPointer != NULL; bookListPointer = bookListPointer->nextBook)
+    {
+        if (bookListPointer->isLoan == false)
+        {
+            bookListPointer->isLoan = true;
+            uint32_t t = getTimefromDate(time);
+            bookListPointer->loanTime = t;
+            bookListPointer->expireTime = t + borrowTime;
+            userBorrowPointer->nextLoan = malloc(sizeof(LoanList));
+            userBorrowPointer = userBorrowPointer->nextLoan;
+            userBorrowPointer->book = bookListPointer;
+            return false;
+        }
+    }
+    return true;
+}
+int returnBook(BookInfo *book, Date time, User *user)
+{
+    LoanList *loanListPointer = user->loanlist, *lstPointer = NULL;
+    for (; loanListPointer != NULL; loanListPointer = loanListPointer->nextLoan)
+    {
+        if (loanListPointer->book->bookinfo == book)
+        {
+            BookList *p = loanListPointer->book;
+            p->isLoan = false;
+            uint32_t endOfExpireTime = p->expireTime;
+            uint32_t returnTime = getTimefromDate(time);
+            if (lstPointer == NULL)
+                user->loanlist = loanListPointer->nextLoan;
+            else
+                lstPointer->nextLoan = loanListPointer->nextLoan;
+            free(loanListPointer);
+            if (returnTime <= endOfExpireTime)
+                return 0;
+            else
+                return returnTime - endOfExpireTime;
+        }
+        lstPointer = loanListPointer;
+    }
+    return -1;
 }

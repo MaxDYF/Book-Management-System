@@ -1,5 +1,4 @@
 #include "time.h"
-
 Date getDatefromTime(uint32_t time)
 {
     Date date;
