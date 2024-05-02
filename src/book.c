@@ -23,8 +23,10 @@ BookInfo *createBook(BookInfo *bookhead, uint32_t ISBN, char *name, char *auther
     if (bookhead == NULL)
     {
         bookhead = (BookInfo *)malloc(sizeof(BookInfo));
-        strcpy(bookhead->name, name);
-        strcpy(bookhead->auther, auther);
+        bookhead->name = name;
+        bookhead->auther = auther;
+        bookhead->ISBN = ISBN;
+        bookhead->bookStatus = (BookStatus *)malloc(sizeof(BookStatus));
         return bookhead;
     }
     BookInfo *tmp = bookhead;
@@ -36,9 +38,10 @@ BookInfo *createBook(BookInfo *bookhead, uint32_t ISBN, char *name, char *auther
             continue;
         p->nextBook = (BookInfo *)malloc(sizeof(BookInfo));
         p = p->nextBook;
-        strcpy(p->name, name);
-        strcpy(p->auther, auther);
+        p->name = name;
+        p->auther = auther;
         p->ISBN = ISBN;
+        p->bookStatus = (BookStatus *)malloc(sizeof(BookStatus));
         return p;
     }
     else

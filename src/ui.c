@@ -34,11 +34,11 @@ void displayCreateBookMenu(void)
     else
     {
         puts("书本不存在。");
-        createBook(bookInfoHead, ISBN, bookName, autherName);
+        bookInfoPointer = createBook(bookInfoHead, ISBN, bookName, autherName);
     }
     puts("输入添加的数量：");
     uint32_t bookCount = 0;
-    scanf("%d\n", &bookCount);
+    scanf("%d", &bookCount);
     addBook(bookInfoPointer, bookCount);
     puts("录入完毕，返回主菜单。");
     system("pause");
