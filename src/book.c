@@ -1,5 +1,7 @@
 #include "book.h"
-#include <malloc.h>
+#include <stdlib.h>
+#include <string.h>
+BookInfo *bookInfoHead = NULL;
 BookInfo *findBookbyISBN(BookInfo *bookhead, uint32_t ISBN)
 {
     BookInfo *p = bookhead;

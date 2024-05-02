@@ -5,6 +5,7 @@
     "cstdlib": "c",
     "book.h": "c",
     "typeinfo": "c",
-    "stdint.h": "c"
+    "stdint.h": "c",
+    "windows.h": "c"
   }
 }

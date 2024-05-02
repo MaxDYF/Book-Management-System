@@ -1,4 +1,6 @@
 #include "user.h"
+#include <stdlib.h>
+#include <string.h>
 User *createUser(User *headUser, uint32_t uid, char *name)
 {
     if (headUser == NULL)

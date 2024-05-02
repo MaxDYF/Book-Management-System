@@ -27,6 +27,9 @@ typedef struct BookInfo
     struct BookInfo *nextBook;
     struct BookStatus *bookStatus;
 } BookInfo;
+
+extern BookInfo *bookInfoHead;
+
 /*
  *  创建新的书本
  *  如果没有这本书，创建并返回该书的指针
