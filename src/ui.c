@@ -81,3 +81,48 @@ void displayMainMenu(void)
         break;
     }
 }
+
+#define BOOK_MNG_MSG_LINE 5
+const char *bookManageMsg[BOOK_MNG_MSG_LINE] = {"图书管理系统 V1.0.0",
+                                                "请输入您要进行的操作：",
+                                                "1. 图书信息的查询。",
+                                                "2. 图书信息的修改。",
+                                                "3. 图书信息的删除。"};
+void displayBookManageMenu(void)
+{
+    system("cls");
+    for (int i = 0; i < BOOK_MNG_MSG_LINE; i++)
+        puts(bookManageMsg[i]);
+    int opt = 0;
+    scanf("%d", &opt);
+    switch (opt)
+    {
+    case 1:
+        displayBookQueryMenu();
+        break;
+    case 2:
+        displayBookModifyMenu();
+        break;
+    case 3:
+        displayBookDeleteMenu();
+        break;
+    default:
+        break;
+    }
+}
+void displayBookQueryMenu(void)
+{
+    system("cls");
+    puts("请输入要查询的书本ISBN号码：");
+    uint32_t ISBN = 0;
+    scanf("%llu", &ISBN);
+    BookInfo *bookInfoPointer = findBookbyISBN(bookInfoHead, ISBN);
+    if (bookInfoPointer == NULL)
+    {
+        puts("找不到这本书，返回主菜单。");
+        return;
+    }
+    else
+    {
+    }
+}

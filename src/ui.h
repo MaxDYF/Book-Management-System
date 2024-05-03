@@ -4,4 +4,8 @@ extern const char *mainMsg[];
 extern const char *creatBookMsg[];
 void displayMainMenu(void);
 void displayCreateBookMenu(void);
+void displayBookQueryMenu(void);
+void displayBookModifyMenu(void);
+void displayBookDeleteMenu(void);
+void displayBookManageMenu(void);
 #endif
