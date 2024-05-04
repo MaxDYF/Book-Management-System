@@ -2,46 +2,48 @@
 #include <stdlib.h>
 #include <string.h>
 BookInfo *bookInfoHead = NULL;
-BookInfo *findBookbyISBN(BookInfo *bookhead, uint32_t ISBN)
+BookInfo *findBookbyISBN(uint32_t ISBN)
 {
-    BookInfo *p = bookhead;
-    for (; p != NULL; ++p)
+    BookInfo *p = bookInfoHead;
+    for (; p != NULL; p = p->nextBook)
         if (p->ISBN == ISBN)
             return p;
     return NULL;
 }
-BookInfo *findBookbyName(BookInfo *bookhead, char *name)
+BookInfo *findBookbyName(char *name)
 {
-    BookInfo *p = bookhead;
+    BookInfo *p = bookInfoHead;
     for (; p != NULL; p = p->nextBook)
         if (strcmp(p->name, name) == 0)
             return p;
     return NULL;
 }
-BookInfo *createBook(BookInfo *bookhead, uint32_t ISBN, char *name, char *auther)
+BookInfo *createBook(uint32_t ISBN, char *name, char *auther)
 {
-    if (bookhead == NULL)
+    if (bookInfoHead == NULL)
     {
-        bookhead = (BookInfo *)malloc(sizeof(BookInfo));
-        bookhead->name = name;
-        bookhead->auther = auther;
-        bookhead->ISBN = ISBN;
-        bookhead->bookStatus = (BookStatus *)malloc(sizeof(BookStatus));
-        return bookhead;
+        bookInfoHead = (BookInfo *)malloc(sizeof(BookInfo));
+        bookInfoHead->name = (char *)malloc(sizeof(char) * strlen(name));
+        strcpy(bookInfoHead->name, name);
+        bookInfoHead->auther = (char *)malloc(sizeof(char) * strlen(auther));
+        strcpy(bookInfoHead->auther, auther);
+        bookInfoHead->ISBN = ISBN;
+        bookInfoHead->bookStatus = (BookStatus *)malloc(sizeof(BookStatus));
+        memset(bookInfoHead->bookStatus, 0, sizeof(BookStatus));
+        bookInfoHead->nextBook = NULL;
+        return bookInfoHead;
     }
-    BookInfo *tmp = bookhead;
-    BookInfo *p = findBookbyISBN(tmp, ISBN);
+    BookInfo *p = findBookbyISBN(ISBN);
     if (p == NULL)
     {
-        p = bookhead;
-        for (; p->nextBook != NULL; p = p->nextBook)
-            continue;
-        p->nextBook = (BookInfo *)malloc(sizeof(BookInfo));
-        p = p->nextBook;
+        p = (BookInfo *)malloc(sizeof(BookInfo));
+        p->nextBook = bookInfoHead->nextBook;
         p->name = name;
         p->auther = auther;
         p->ISBN = ISBN;
         p->bookStatus = (BookStatus *)malloc(sizeof(BookStatus));
+        memset(p->bookStatus, 0, sizeof(BookStatus));
+        bookInfoHead->nextBook = p;
         return p;
     }
     else

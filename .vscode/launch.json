@@ -1,7 +1,29 @@
 {
-    // 使用 IntelliSense 了解相关属性。 
-    // 悬停以查看现有属性的描述。
-    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": []
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "g++.exe - 生成和调试活动文件",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}\\build\\BookManageSystem.exe", //可执行程序的完整路径，TCPServer替换为CmakeList文件中指定的程序名称
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "C:\\mingw\\bin", //编译器路径
+      "environment": [],
+      "externalConsole": true,
+      "MIMode": "gdb",
+      "miDebuggerPath": "C:\\mingw\\bin\\gdb.exe", //GDB调试器的路径。
+      "setupCommands": [
+        {
+          "description": "为 gdb 启用整齐打印",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "C/C++: g++.exe 生成活动文件" //指定在运行调试之前需要调用的生成活动文件的task任务，这个要与task.json文件中第三个任务的名称相同
+    }
+  ]
 }

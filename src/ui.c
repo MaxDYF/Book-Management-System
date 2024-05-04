@@ -3,8 +3,9 @@
 #include <stdlib.h>
 #include "ui.h"
 #include "book.h"
-
 #define CREATE_MSG_LINE 2
+
+extern BookInfo *bookInfoHead;
 const char *creatBookMsg[CREATE_MSG_LINE] = {"图书管理系统 V1.0.0",
                                              "正在进行：录入新的图书"};
 
@@ -16,8 +17,7 @@ void displayCreateBookMenu(void)
         puts(creatBookMsg[i]);
     puts("请输入书的名称：");
     char bookName[MAX_CHAR_BUFFER];
-    getchar();
-    fgets(bookName, MAX_CHAR_BUFFER, stdin);
+    scanf("\n%[^\n]", bookName);
 
     puts("请输入书的ISBN编码：");
     uint64_t ISBN = 0;
@@ -25,16 +25,15 @@ void displayCreateBookMenu(void)
 
     puts("请输入书的的作者：");
     char autherName[MAX_CHAR_BUFFER];
-    getchar();
-    fgets(autherName, MAX_CHAR_BUFFER, stdin);
 
-    BookInfo *bookInfoPointer = findBookbyISBN(bookInfoHead, ISBN);
-    if (bookInfoHead != NULL)
+    scanf("\n%[^\n]", autherName);
+    BookInfo *bookInfoPointer = findBookbyISBN(ISBN);
+    if (bookInfoPointer != NULL)
         puts("书本已存在。");
     else
     {
         puts("书本不存在。");
-        bookInfoPointer = createBook(bookInfoHead, ISBN, bookName, autherName);
+        bookInfoPointer = createBook(ISBN, bookName, autherName);
     }
     puts("输入添加的数量：");
     uint32_t bookCount = 0;
@@ -67,6 +66,7 @@ void displayMainMenu(void)
         displayCreateBookMenu();
         break;
     case 2:
+        displayBookManageMenu();
         break;
     case 3:
         break;
@@ -116,13 +116,23 @@ void displayBookQueryMenu(void)
     puts("请输入要查询的书本ISBN号码：");
     uint32_t ISBN = 0;
     scanf("%llu", &ISBN);
-    BookInfo *bookInfoPointer = findBookbyISBN(bookInfoHead, ISBN);
+    BookInfo *bookInfoPointer = findBookbyISBN(ISBN);
     if (bookInfoPointer == NULL)
     {
         puts("找不到这本书，返回主菜单。");
+        system("pause");
         return;
     }
-    else
-    {
-    }
+    printf("找到ISBN编码为%u的书籍。\n", ISBN);
+    printf("书籍名称：%s;\n", bookInfoPointer->name);
+    printf("书籍作者：%s;\n", bookInfoPointer->auther);
+    printf("总共拥有的书籍数量：%d本;\n", bookInfoPointer->bookStatus->totCount);
+    printf("未借出的书籍数量：%d本。\n", bookInfoPointer->bookStatus->restCount);
+    system("pause");
+}
+void displayBookModifyMenu(void)
+{
+}
+void displayBookDeleteMenu(void)
+{
 }

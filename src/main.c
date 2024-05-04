@@ -3,9 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <Windows.h>
+#define CODE_PAGE 65001
 int main()
 {
-    SetConsoleOutputCP(65001);
+    // system("chcp 65001");
+    SetConsoleCP(CODE_PAGE);
+    SetConsoleOutputCP(CODE_PAGE);
     while (true)
         displayMainMenu();
     system("pause");
