@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdbool.h>
-#include "time.h"
+#include "date.h"
 #include "user.h"
 #ifndef _BOOK_H_
 #define _BOOK_H_
@@ -11,7 +11,7 @@ typedef struct BookList
     uint32_t expireTime;
     uint32_t loanUID;
     struct BookList *nextBook;
-    struct BookInfo *bookinfo;
+    struct BookInfo *bookInfo;
 } BookList;
 typedef struct BookStatus
 {
@@ -66,11 +66,11 @@ uint32_t deleteBook(BookInfo *book, uint32_t val);
  *  如果借阅成功，则返回false，并修改借阅书本的借阅情况
  *  如果借阅失败，返回true
  */
-bool borrowBook(BookInfo *book, Date time, User *user, uint32_t borrowTime);
+bool borrowBook(BookInfo *book, User *user, uint32_t borrowTime);
 /*
  *  归还一本书
  *  如果归还成功，返回还书的过期时间，未过期则返回0
  *  如果没有借阅信息，返回-1
  */
-int returnBook(BookInfo *book, Date time, User *user);
+int returnBook(BookInfo *book, User *user);
 #endif

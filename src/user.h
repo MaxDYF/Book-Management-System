@@ -1,7 +1,7 @@
 #include <stdint.h>
 typedef struct LoanList
 {
-    struct BookList *book;
+    struct BookList *bookList;
     struct LoanList *nextLoan;
 } LoanList;
 typedef struct User
@@ -17,4 +17,5 @@ typedef struct User
  *  反之则不创建，返回指针
  *  如果创建的uid和原有的用户有冲突，则直接返回NULL，不创建新用户
  */
-User *createUser(User *headUser, uint32_t uid, char *name);
+User *createUser(uint32_t uid, char *name);
+User *findUserbyUID(uint32_t uid);

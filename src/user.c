@@ -1,11 +1,14 @@
 #include "user.h"
 #include <stdlib.h>
 #include <string.h>
-User *createUser(User *headUser, uint32_t uid, char *name)
+#include "book.h"
+User *headUser;
+User *createUser(uint32_t uid, char *name)
 {
     if (headUser == NULL)
     {
         headUser = (User *)malloc(sizeof(User));
+        headUser->name = (char *)malloc(sizeof(char) * strlen(name));
         headUser->loanlist = NULL;
         strcpy(headUser->name, name);
         headUser->uid = uid;
@@ -32,4 +35,12 @@ User *createUser(User *headUser, uint32_t uid, char *name)
     strcpy(p->name, name);
     p->uid = uid;
     return p;
+}
+User *findUserbyUID(uint32_t uid)
+{
+    User *userPointer = headUser;
+    for (; userPointer != NULL; userPointer = userPointer->nextUser)
+        if (userPointer->uid == uid)
+            return userPointer;
+    return NULL;
 }
