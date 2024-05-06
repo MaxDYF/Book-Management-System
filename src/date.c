@@ -1,7 +1,7 @@
 #include "date.h"
 #include <stdio.h>
 #include <stdlib.h>
-Date nowTime;
+uint32_t nowTime;
 #define MAX_CHAR_BUFFER 100
 void timeInit()
 {
@@ -14,11 +14,12 @@ void timeInit()
     // For Windows, you would use localtime_s as follows:
     // struct tm timeinfo;
     // localtime_s(&timeinfo, &rawtime);
-
+    Date nt;
     // Assign the date components to the Date structure
-    nowTime.year = timeinfo->tm_year + 1900; // tm_year is years since 1900
-    nowTime.month = timeinfo->tm_mon + 1;    // tm_mon is months since January (0-11)
-    nowTime.day = timeinfo->tm_mday;         // tm_mday is day of the month (1-31)
+    nt.year = timeinfo->tm_year + 1900; // tm_year is years since 1900
+    nt.month = timeinfo->tm_mon + 1;    // tm_mon is months since January (0-11)
+    nt.day = timeinfo->tm_mday;         // tm_mday is day of the month (1-31)
+    nowTime = getTimefromDate(nt);
 }
 Date getDatefromTime(uint32_t time)
 {

@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 BookInfo *bookInfoHead = NULL;
-extern Date nowTime;
+
+extern uint32_t nowTime;
 BookInfo *findBookbyISBN(uint64_t ISBN)
 {
     BookInfo *p = bookInfoHead;
@@ -19,11 +20,17 @@ BookInfo *findBookbyName(char *name)
             return p;
     return NULL;
 }
-BookInfo *createBook(uint64_t ISBN, char *name, char *auther)
+void updateBook(BookInfo *book, uint64_t newISBN, char *newName, char *newAuther)
+{
+    book->ISBN = newISBN;
+    strcpy(book->name, newName);
+    strcpy(book->auther, newAuther);
+}
+BookInfo *createBook(uint64_t ISBN, char *name, char *auther, uint32_t time)
 {
     if (bookInfoHead == NULL)
     {
-        bookInfoHead = (BookInfo *)malloc(sizeof(BookInfo));
+        bookInfoHead = (BookInfo *)calloc(1, sizeof(BookInfo));
         bookInfoHead->name = (char *)malloc(sizeof(char) * strlen(name));
         strcpy(bookInfoHead->name, name);
         bookInfoHead->auther = (char *)malloc(sizeof(char) * strlen(auther));
@@ -37,12 +44,14 @@ BookInfo *createBook(uint64_t ISBN, char *name, char *auther)
     BookInfo *p = findBookbyISBN(ISBN);
     if (p == NULL)
     {
-        p = (BookInfo *)malloc(sizeof(BookInfo));
+        p = (BookInfo *)calloc(1, sizeof(BookInfo));
         p->nextBook = bookInfoHead->nextBook;
-        p->name = name;
-        p->auther = auther;
+        p->name = (char *)malloc(sizeof(char) * strlen(name));
+        strcpy(p->name, name);
+        p->auther = (char *)malloc(sizeof(char) * strlen(auther));
+        strcpy(p->auther, auther);
         p->ISBN = ISBN;
-        p->bookStatus = (BookStatus *)malloc(sizeof(BookStatus));
+        p->bookStatus = (BookStatus *)calloc(1, sizeof(BookStatus));
         memset(p->bookStatus, 0, sizeof(BookStatus));
         bookInfoHead->nextBook = p;
         return p;
@@ -50,14 +59,30 @@ BookInfo *createBook(uint64_t ISBN, char *name, char *auther)
     else
         return NULL;
 }
-void addBook(BookInfo *book, uint32_t val)
+void EraseBook(BookInfo *bookInfoPointer)
+{
+    if (bookInfoPointer == bookInfoHead)
+    {
+        bookInfoHead = bookInfoHead->nextBook;
+        free(bookInfoPointer);
+    }
+    else
+    {
+        BookInfo *p = bookInfoHead;
+        for (; p->nextBook != bookInfoPointer; p = p->nextBook)
+            continue;
+        p->nextBook = bookInfoPointer->nextBook;
+        free(bookInfoPointer);
+    }
+}
+void addBook(BookInfo *book, uint32_t val, uint32_t time)
 {
     book->bookStatus->totCount += val;
     book->bookStatus->restCount += val;
     BookList *p = book->bookStatus->books;
     if (p == NULL)
     {
-        book->bookStatus->books = (BookList *)malloc(sizeof(BookList));
+        book->bookStatus->books = (BookList *)calloc(1, sizeof(BookList));
         p = book->bookStatus->books;
         p->isLoan = false;
         p->bookInfo = book;
@@ -71,7 +96,7 @@ void addBook(BookInfo *book, uint32_t val)
     }
     while (val > 0)
     {
-        p->nextBook = (BookList *)malloc(sizeof(BookList));
+        p->nextBook = (BookList *)calloc(1, sizeof(BookList));
         p = p->nextBook;
         p->isLoan = false;
         p->bookInfo = book;
@@ -79,7 +104,7 @@ void addBook(BookInfo *book, uint32_t val)
         val--;
     }
 }
-uint32_t deleteBook(BookInfo *book, uint32_t val)
+uint32_t deleteBook(BookInfo *book, uint32_t val, uint32_t time)
 {
     if (book == NULL)
         return 0;
@@ -108,7 +133,7 @@ uint32_t deleteBook(BookInfo *book, uint32_t val)
     }
     return ans;
 }
-LoanList *borrowBook(BookInfo *book, User *user, uint32_t borrowTime)
+LoanList *borrowBook(BookInfo *book, User *user, uint32_t borrowTime, uint32_t time)
 {
     if (book->bookStatus == NULL)
         return NULL;
@@ -125,11 +150,11 @@ LoanList *borrowBook(BookInfo *book, User *user, uint32_t borrowTime)
         {
             bookStatusPointer->restCount--;
             bookListPointer->isLoan = true;
-            uint32_t t = getTimefromDate(nowTime);
+            uint32_t t = time;
             bookListPointer->loanTime = t;
             bookListPointer->expireTime = t + borrowTime;
             bookListPointer->loaner = user;
-            userBorrowPointer = (LoanList *)malloc(sizeof(LoanList));
+            userBorrowPointer = (LoanList *)calloc(1, sizeof(LoanList));
             userBorrowPointer->bookList = bookListPointer;
             if (user->loanlist == NULL)
             {
@@ -146,7 +171,7 @@ LoanList *borrowBook(BookInfo *book, User *user, uint32_t borrowTime)
     }
     return NULL;
 }
-int returnBook(BookInfo *book, User *user)
+int returnBook(BookInfo *book, User *user, uint32_t time)
 {
     LoanList *loanListPointer = user->loanlist, *lstPointer = NULL;
     for (; loanListPointer != NULL; loanListPointer = loanListPointer->nextLoan)
@@ -157,7 +182,7 @@ int returnBook(BookInfo *book, User *user)
             book->bookStatus->restCount++;
             p->isLoan = false;
             uint32_t endOfExpireTime = p->expireTime;
-            uint32_t returnTime = getTimefromDate(nowTime);
+            uint32_t returnTime = time;
             if (lstPointer == NULL)
                 user->loanlist = loanListPointer->nextLoan;
             else

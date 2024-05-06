@@ -1,6 +1,7 @@
 #include "ui.h"
 #include "book.h"
 #include "date.h"
+#include "file.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <Windows.h>
@@ -9,6 +10,7 @@ int main()
 {
     // system("chcp 65001");
     timeInit();
+    readInit();
     SetConsoleCP(CODE_PAGE);
     SetConsoleOutputCP(CODE_PAGE);
     while (true)
