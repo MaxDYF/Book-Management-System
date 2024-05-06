@@ -6,17 +6,21 @@
 #include <string.h>
 #define CREATE_MSG_LINE 2
 
+#define MAX_CHAR_BUFFER 100
 extern BookInfo *bookInfoHead;
+extern Date nowTime;
 const char *creatBookMsg[CREATE_MSG_LINE] = {"图书管理系统 V1.0.0",
                                              "正在进行：录入新的图书"};
 
-#define MAX_CHAR_BUFFER 100
 BookInfo *displayInputISBN(char *outputMsg)
 {
     BookInfo *bookInfoPointer = NULL;
+    bool isFirst = true;
     do
     {
-        system("cls");
+        if (!isFirst)
+            system("cls");
+        isFirst = false;
         puts(outputMsg);
         uint64_t ISBN;
         scanf("%llu", &ISBN);
@@ -90,10 +94,13 @@ void displayMainMenu(void)
         displayBookManageMenu();
         break;
     case 3:
+        displayBorrowBookMenu();
         break;
     case 4:
+        displayReturnBookMenu();
         break;
     case 5:
+        displayEraseBorrowRecordMenu();
         break;
     case 6:
         exit(0);
@@ -110,6 +117,18 @@ void displayBookInfo(BookInfo *bookInfoPointer)
     printf("总共拥有的书籍数量：%d本;\n", bookInfoPointer->bookStatus->totCount);
     printf("未借出的书籍数量：%d本。\n", bookInfoPointer->bookStatus->restCount);
 }
+void displayUserInfo(User *user)
+{
+    printf("借阅人学号: %d\n", user->uid);
+    printf("借阅人姓名: %s\n", user->name);
+}
+void displayBookListInfo(BookList *bookList)
+{
+    printf("借阅时间: %s\n", timeToString(getDatefromTime(bookList->loanTime)));
+    printf("到期时间: %s\n", timeToString(getDatefromTime(bookList->expireTime)));
+    printf("是否超期：%s\n", (bookList->expireTime < getTimefromDate(nowTime) ? "是" : "否"));
+}
+
 #define BOOK_MNG_MSG_LINE 5
 const char *bookManageMsg[BOOK_MNG_MSG_LINE] = {"图书管理系统 V1.0.0",
                                                 "请输入您要进行的操作：",
@@ -140,12 +159,25 @@ void displayBookManageMenu(void)
 }
 void displayBookQueryMenu(void)
 {
+    system("cls");
     BookInfo *bookInfoPointer = displayInputISBN("请输入要查询的书本ISBN号码：");
     displayBookInfo(bookInfoPointer);
+    puts("借阅信息详情：");
+    BookList *p = bookInfoPointer->bookStatus->books;
+    for (int cnt = 0; p != NULL; p = p->nextBook)
+    {
+        if (p->isLoan == false)
+            continue;
+        printf("#%d\n", ++cnt);
+        displayUserInfo(p->loaner);
+        displayBookListInfo(p);
+        puts("");
+    }
     system("pause");
 }
 void displayBookModifyMenu(void)
 {
+    system("cls");
     BookInfo *bookInfoPointer = displayInputISBN("请输入您要更改信息的书籍的ISBN编号：");
     displayBookInfo(bookInfoPointer);
     puts("请选择要更改的信息：");
@@ -193,6 +225,7 @@ void displayBookModifyMenu(void)
 }
 void displayBookDeleteMenu(void)
 {
+    system("cls");
     BookInfo *bookInfoPointer = displayInputISBN("请输入您要删除书本的ISBN编号。");
     displayBookInfo(bookInfoPointer);
     puts("确认删除这本书的信息？(y/n)");
@@ -227,16 +260,7 @@ void displayBookDeleteMenu(void)
 
 void displayBorrowBookMenu(void)
 {
-    BookInfo *bookInfoPointer = displayInputISBN("请输入您要借阅的书籍的ISBN号：");
-    displayBookInfo(bookInfoPointer);
-    BookStatus *status = bookInfoPointer->bookStatus;
-    if (status->totCount <= status->restCount)
-    {
-        puts("该书籍余量不足，请选择其它书籍！");
-        system("pause");
-        return;
-    }
-    status->restCount++;
+    system("cls");
     puts("请输入借阅人学号：");
     uint32_t uid;
     scanf("%u", &uid);
@@ -245,13 +269,90 @@ void displayBorrowBookMenu(void)
     {
         puts("没有该同学的信息，请输入姓名：");
         char userName[MAX_CHAR_BUFFER];
+        getchar();
         scanf("%[^\n]", userName);
-        createUser(uid, userName);
+        userPointer = createUser(uid, userName);
         puts("成功创建！");
     }
+    BookInfo *bookInfoPointer = displayInputISBN("请输入您要借阅的书籍的ISBN号：");
+    if (findLoan(userPointer, bookInfoPointer->ISBN) != NULL)
+    {
+        puts("您已借阅过这本书，请勿重复借阅！");
+        system("pause");
+        return;
+    }
+    displayBookInfo(bookInfoPointer);
+    BookStatus *status = bookInfoPointer->bookStatus;
     puts("请输入要借阅的时间（单位：天）：");
     uint32_t times;
     scanf("%u", &times);
+    LoanList *loanPointer = borrowBook(bookInfoPointer, userPointer, times);
+    if (loanPointer != NULL)
+    {
+        puts("借阅成功！");
+
+        printf("借阅书籍：%s\n", loanPointer->bookList->bookInfo->name);
+        printf("借阅时间：%s\n", timeToString(nowTime));
+        printf("到期时间：%s\n", timeToString(getDatefromTime(loanPointer->bookList->expireTime)));
+        system("pause");
+        return;
+    }
+    else
+    {
+        puts("借阅失败！书籍余量不足。");
+        return;
+    }
 }
-void displayReturnBookMenu(void);
-void displayEraseBorrowRecordMenu(void);
+void displayReturnBookMenu(void)
+{
+    system("cls");
+    puts("请输入借阅人学号：");
+    uint32_t uid;
+    scanf("%u", &uid);
+    User *userPointer = findUserbyUID(uid);
+    if (userPointer == NULL)
+    {
+        puts("没有该同学的信息！请检查后重试！");
+        return;
+    }
+    BookInfo *bookInfoPointer = displayInputISBN("请输入您要归还的书籍的ISBN编号：");
+    int returnCode = returnBook(bookInfoPointer, userPointer);
+    if (returnCode == -1)
+    {
+        puts("归还失败！没有对应的借阅信息！");
+    }
+    else if (returnCode == 0)
+    {
+        puts("归还成功！书籍按时归还！");
+    }
+    else
+    {
+        printf("归还成功！超期%u天归还书籍！\n", returnCode);
+    }
+    system("pause");
+}
+void displayEraseBorrowRecordMenu(void)
+{
+    system("cls");
+    puts("请输入借阅人学号：");
+    uint32_t uid;
+    scanf("%u", &uid);
+    User *userPointer = findUserbyUID(uid);
+    if (userPointer == NULL)
+    {
+        puts("没有该同学的信息！请检查后重试！");
+        return;
+    }
+    BookInfo *bookInfoPointer = displayInputISBN("请输入您要删除用户书籍的ISBN编号：");
+    int returnCode = returnBook(bookInfoPointer, userPointer);
+    if (returnCode != -1)
+    {
+        puts("删除成功！");
+        system("pause");
+    }
+    else
+    {
+        puts("删除失败！");
+        system("pause");
+    }
+}

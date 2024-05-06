@@ -1,4 +1,7 @@
 #include <stdint.h>
+#ifndef _USER_H_
+#define _USER_H_
+
 typedef struct LoanList
 {
     struct BookList *bookList;
@@ -8,7 +11,7 @@ typedef struct User
 {
     uint32_t uid;
     char *name;
-    LoanList *loanlist;
+    struct LoanList *loanlist;
     struct User *nextUser;
 } User;
 /*
@@ -18,4 +21,6 @@ typedef struct User
  *  如果创建的uid和原有的用户有冲突，则直接返回NULL，不创建新用户
  */
 User *createUser(uint32_t uid, char *name);
+LoanList *findLoan(User *user, uint64_t ISBN);
 User *findUserbyUID(uint32_t uid);
+#endif

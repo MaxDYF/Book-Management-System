@@ -7,34 +7,23 @@ User *createUser(uint32_t uid, char *name)
 {
     if (headUser == NULL)
     {
-        headUser = (User *)malloc(sizeof(User));
-        headUser->name = (char *)malloc(sizeof(char) * strlen(name));
+        headUser = (User *)calloc(1, sizeof(User));
+        headUser->name = (char *)calloc(strlen(name), sizeof(char));
         headUser->loanlist = NULL;
+        headUser->nextUser = NULL;
         strcpy(headUser->name, name);
         headUser->uid = uid;
         return headUser;
     }
-    User *p = headUser, *lst = NULL;
-    for (; p != NULL; p = p->nextUser)
-    {
-        if (p->uid == uid)
-        {
-            if (strcmp(p->name, name) == 0)
-                return p;
-            else
-                return NULL;
-        }
-        lst = p;
-    }
-    if (lst == NULL)
-        p = headUser;
-    else
-        p = lst;
-    p->nextUser = (User *)(malloc(sizeof(User)));
-    p = p->nextUser;
-    strcpy(p->name, name);
-    p->uid = uid;
-    return p;
+    User *tempP = findUserbyUID(uid);
+    if (tempP != NULL)
+        return tempP;
+    User *newUser = (User *)calloc(1, sizeof(User));
+    newUser->name = (char *)calloc(strlen(name), sizeof(char));
+    strcpy(newUser->name, name);
+    newUser->uid = uid;
+    newUser->nextUser = headUser;
+    headUser = newUser;
 }
 User *findUserbyUID(uint32_t uid)
 {
@@ -42,5 +31,15 @@ User *findUserbyUID(uint32_t uid)
     for (; userPointer != NULL; userPointer = userPointer->nextUser)
         if (userPointer->uid == uid)
             return userPointer;
+    return NULL;
+}
+LoanList *findLoan(User *user, uint64_t ISBN)
+{
+    LoanList *loanListPointer = user->loanlist;
+    for (; loanListPointer != NULL; loanListPointer = loanListPointer->nextLoan)
+    {
+        if (loanListPointer->bookList->bookInfo->ISBN == ISBN)
+            return loanListPointer;
+    }
     return NULL;
 }
